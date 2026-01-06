@@ -1,0 +1,331 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage[polish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\usepackage[
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue
+]{hyperref}
+
+\geometry{
+    a4paper,
+    left=20mm,
+    right=20mm,
+    top=25mm,
+    bottom=25mm
+}
+
+\lstdefinestyle{pseudocode}{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue!70!black}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    numbers=left,
+    stepnumber=1,
+    numbersep=10pt,
+    tabsize=2,
+    captionpos=b,
+    morekeywords={input, output, DLA, DOPOKI, ORAZ, LUB, ZWROC, OD, DO, JEZELI, INACZEJ, PRZERWIJ},
+    morecomment=[l]{//}
+}
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+
+\vspace*{1cm}
+
+\includegraphics[width=0.4\textwidth]{prz_pl.png}
+
+\vspace{1cm}
+
+{\Large \textbf{Politechnika Rzeszowska}}\\
+{\large im. Ignacego Łukasiewicza}
+
+\vspace{0.5cm}
+
+{\large \textbf{Wydział Matematyki i Fizyki Stosowanej}}
+
+\vspace{1.5cm}
+
+\rule{\textwidth}{0.6pt}
+
+\vspace{0.8cm}
+
+{\LARGE\bfseries
+Zadanie programistyczne (Zadanie 36)
+}
+
+\vspace{0.8cm}
+
+\rule{\textwidth}{0.6pt}
+
+\vspace{1.5cm}
+
+{\large
+\textbf{Sprawozdanie}\\[2mm]
+Kierunek: Inżynieria i Analiza Danych
+}
+
+\vspace{1.5cm}
+
+{\large
+Autor:\\[2mm]
+\textbf{Krystian Figiela}
+}
+
+\vfill
+
+\includegraphics[width=0.35\textwidth]{wmifs_pl.png}
+
+\vspace{0.8cm}
+
+{\large Styczeń 2025}
+
+\end{center}
+\end{titlepage}
+
+{\large \tableofcontents}
+\newpage
+
+\section{Treść zadania}
+Dla zadanego ciągu liczb naturalnych znajdź najdłuższy podciąg, którego suma jest mniejsza niż zadana liczba k.
+
+\textbf{Przykład.}
+\begin{itemize}
+    \item[]\textbf{Wejście:} $A[] = [1, 130, 2, 5, 1, 1, 4, 4, 1, 3, 1, 1]$, $k = 10$
+    \item[]\textbf{Wyjście:} Szukany podciąg to: \\ $[2, 5, 1, 1]$, $[4, 1, 3, 1]$, $[1, 3, 1, 1]$
+    \item[] 
+    \item[]\textbf{Wejście:} $A[] = [1, 130, 1, 9, 11, 6, 1, 1, 1, 3, 1, 1]$, $k = 4$
+    \item[]\textbf{Wyjście:} Szukany podciąg to: \\ $[1, 1, 1]$
+\end{itemize}
+
+\section{Rozwiązanie - podejście pierwsze (brute force)}
+
+\subsection{Analiza problemu}
+W pierwszym podejściu do rozwiązania zadania postąpimy metodą "siłową" (brute force), implementując rozwiązanie, które w sposób naturalny narzuca się przy analizie treści problemu. Zgodnie z definicją zadania, najdłuższy podciąg spełniający warunek sumy mniejszej od zadanej liczby k musi być podciągiem spójnym, czyli takim, który składa się z kolejnch elementów tablicy. Oznacza to że każdy pociąg można opisać za pomocą pary indeksów (początku i końca). Początek <= Koniec.
+
+Najprostrzym podejściem do rozwiązania problemu jest sprawdzenie wszystkich możliwych par indeksów (i,j) i oblczenie sumy elementów  podciągu A[i...j]. Dla każdej takiej pary sprawdzamy, czy suma rozpatrywanego podciągu jest mniejsza od k. Jeżeli warunek ten jest spełniony, obliczamy długość podciągu jako j-i+1 i porównujemy ją z aktualnie zapamiętaną długością najdłuższego poprawnego podciągu. Jeżeli nowo obliczona długość jest większa, aktualizujemy zapamiętany wynik.
+
+Należy zwrócić uwagę na fakt, że ciąg wejściowy składa się z liczb naturalnych, a więc suma elementów podciągu jest funkcją niemalejącą wraz ze wzrostem indeksu j. Oznacza to, że w momencie, gdy suma stanie się większa lub równa k, dalsze rozszerzenie podciągu nie ma sensu. Z tego powodu w algorytmie można zastosować instrukcję przerwania pętli wewnętrznej, co pozwala ograniczyć liczbę niepotrzebnych obliczeń.
+
+Algorytm powinien również poprawnie uwzględnić przypadki brzegowe. Jeżeli tablica wejściowa jest pusta lub zawiera tylko jeden element, algorytm nie znajdzie podciągu dłuższego niż jeden element, a zmienna najdluzszy pozostanie równa 0 lub 1, w zależności od spełnienia warunku sumy. Zwracany wynik będzie wówczas pustą listą lub jednoelementowym podciągiem, co jest zgodne z treścią zadania.
+
+\begin{enumerate}
+    \item \textbf{Dane wejściowe}
+    \begin{itemize}
+        \item[] Danymi wejściowymi algorytmu są:
+        \item tablica A zawierająca n liczb naturalnych,
+        \item liczba naturalna k, określająca górne ograniczenie sumy podciągu.
+    \end{itemize}
+    \item \textbf{Dane wyjściowe}
+    \begin{itemize}
+        \item[] Danymi wyjściowymi algorytmu jest podciąg tablicy A o maksymalnej długości, którego suma elementów jest mniejsza niż k.
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+
+\subsection{Schemat blokowy}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[height=20cm]{schemat.pdf}  
+    \caption{Schemat blokowy - brute force}
+    \label{fig:schemat_brute}
+\end{figure}
+
+\subsection{Pseudokod}
+\begin{lstlisting}[style=pseudocode, caption={Pseudokod - brute force}]
+input:  A   // tablica przechowujaca wartosci ciagu
+        k   // zadana liczba
+output: najdluzszy podciag tablicy A o sumie < k
+
+n := dlugosc(A)
+najdluzszy := 0
+start := 0
+
+DLA i OD 0 DO n-1
+    suma := 0
+    DLA j OD i DO n-1
+        suma := suma + A[j]
+
+        JEZELI suma < k
+            aktualna_dlugosc := j - i + 1
+            JEZELI aktualna_dlugosc > najdluzszy
+                najdluzszy := aktualna_dlugosc
+                start := i
+            INACZEJ
+                PRZERWIJ
+
+ZWROC A[OD start DO start + najdluzszy) 
+\end{lstlisting}
+
+\subsection{Sprawdzenie poprawności algorytmu - ,,ołówkowe'' rozwiązanie problemu}
+Analiza 'ołówkowa' algorytmu zostanie przeprowadzona na przykładzie danych wejściowych: \\
+A = [2, 3, 1, 15, 2, 2, 5, 12, 1, 1, 4], k = 8
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+lewy & prawy & A[prawy] & suma & aktualna\_dlugosc & najdluzszy & start \\
+\hline
+0  & 0  & 2   & 2  & 1  & 1  & 0 \\
+0  & 1  & 3   & 5  & 2  & 2  & 0 \\
+0  & 2  & 1   & 6  & 3  & 3  & 0 \\
+1  & 1  & 3   & 3  & 1  & 3  & 0 \\
+1  & 2  & 1   & 4  & 2  & 3  & 0 \\
+2  & 2  & 1   & 1  & 1  & 3  & 0 \\
+4  & 4  & 2   & 2  & 1  & 3  & 0 \\
+4  & 5  & 2   & 4  & 2  & 3  & 0 \\
+5  & 5  & 2   & 2  & 1  & 3  & 0 \\
+5  & 6  & 5   & 7  & 2  & 3  & 0 \\
+6  & 6  & 5   & 5  & 1  & 3  & 0 \\
+8  & 8  & 1   & 1  & 1  & 3  & 0 \\
+8  & 9  & 1   & 2  & 2  & 3  & 0 \\
+8  & 10 & 4   & 6  & 3  & 3  & 0 \\
+9  & 9  & 1   & 1  & 1  & 3  & 0 \\
+9  & 10 & 4   & 5  & 2  & 3  & 0 \\
+10 & 10 & 4   & 4  & 1  & 3  & 0 \\
+\hline
+\end{tabular}
+\caption{Ołówkowe śledzenie algorytmu brute-force}
+\label{tab:brute_olowkowe}
+\end{table}
+
+\subsection{Teoretyczne oszacowanie złożoności obliczeniowej}
+Podstawową operacją jest dodanie elementu do sumy i sprawdzenie warunku suma < k. W najgorszym przypadku (jeśli suma rzadko przekraca k) wewnętrzna pętla przebiega do końca dla każdego i.
+\begin{itemize}
+    \item dla i=0: n operacji
+    \item dla i=1: n-1 operacji
+    \item dla i=2: n-2 operacji
+    \item ...
+    \item dla i=n-1: 1 operacja
+\end{itemize}
+
+{ \Large
+\begin{equation}
+    \sum_{k=1}^{n}k = \frac{n(n+1)}{2}
+\end{equation}
+}
+Zatem złożoność czasowa w najgorszym przypadku wynosi:
+
+\begin{equation}
+    O(n^2)
+\end{equation}
+
+\section{Rozwiązanie - próba druga (sliding window)}
+
+\subsection{Analiza problemu}
+Po zapoznaniu się z rozwiązaniem brute force można zauważyć, że jego główną wadą jest konieczność wielokrotnego obliczania sum tych samych fragmentów tablicy. Dla każdego nowego początku podciągu suma elementów jest liczona od zera, mimo że wiele z tych operacji się powtarza. Prowadzi to do złożoności kwadratowej, która dla długich ciągów staje się nieefektywna. W celu usprawnienia algorytmu należy zatem poszukać metody, która pozwoli wykorzystywać wcześniej wykonane obliczenia.
+
+Kluczową obserwacją jest fakt, że rozpatrywany ciąg składa się z liczb naturalnych. Oznacza to, że jeżeli do aktualnego podciągu dołożymy kolejny element z prawej strony, to jego suma nie zmniejszy się, lecz co najwyżej wzrośnie. Własność ta sugeruje możliwość utrzymywania jednego „ruchomego” przedziału elementów tablicy, którego granice będą zmieniane w trakcie działania algorytmu, zamiast każdorazowego rozpoczynania obliczeń od nowa.
+
+Możemy stworzyć tzw. okno z dwoma indeksami (lewy oraz prawy). Indeks lewy wskazuje początek aktualnie analizowanego podciągu, natomiast prawy – jego koniec. Na początku algorytmu oba indeksy ustawiamy na początek tablicy. Dodatkowo używamy zmiennej suma, która będzie oznaczać sumę aktualnie analizowanego podciągu.
+
+Następnie można przesuwać indeks prawy w prawo, dołączając kolejne elementy tablicy do aktualnego podciągu i zwiększając sumę o wartość nowo dodanego elementu. Po każdym rozszerzeniu okna sprawdzamy, czy suma elementów podciągu nadal spełnia warunek < k. Gdy suma jest większa bądź równa k, należy skrócić podciąg.
+
+Skracanie podciągu realizujemy poprzez zwiększenie indeksu lewy i odjęcie od sumy elementu, który usunęliśmy. Operację powtarzamy tak długo aż suma ponownie będzie mniejsza od k. 
+
+\begin{enumerate}
+    \item \textbf{Dane wejściowe}
+    \begin{itemize}
+        \item[] Danymi wejściowymi algorytmu są:
+        \item tablica A zawierająca n liczb naturalnych,
+        \item liczba naturalna k, określająca górne ograniczenie sumy podciągu.
+    \end{itemize}
+    \item \textbf{Dane wyjściowe}
+    \begin{itemize}
+        \item[] Danymi wyjściowymi algorytmu jest podciąg tablicy A o maksymalnej długości, którego suma elementów jest mniejsza niż k.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Schemat blokowy}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[height=20cm]{schemat2.pdf}  
+    \caption{Schemat blokowy - sliding window}
+    \label{fig:schemat_window}
+\end{figure}
+
+\subsection{Pseudokod}
+\begin{lstlisting}[style=pseudocode, caption={Pseudokod - sliding window}]
+input:  A   // tablica przechowujaca wartosci ciagu
+        k   // zadana liczba
+output: najdluzszy podciag tablicy A o sumie < k
+
+lewy := 0
+najdluzszy := 0
+start := 0
+suma := 0
+
+DLA prawy OD 0 DO dlugosc(A) - 1
+    suma := suma + A[prawy]
+
+    DOPOKI suma >= k ORAZ lewy <= prawy
+        suma := suma - A[lewy]
+        lewy := lewy + 1
+
+    aktualna_dlugosc := prawy - lewy + 1
+
+    JEZELI aktualna_dlugosc > najdluzszy
+        najdluzszy := aktualna_dlugosc
+        start := lewy
+
+ZWROC A[OD start DO start + najdluzszy) 
+\end{lstlisting}
+
+\subsection{Sprawdzenie poprawności algorytmu - ,,ołówkowe'' rozwiązanie problemu}
+Analiza 'ołówkowa' algorytmu zostanie przeprowadzona na przykładzie danych wejściowych: \\
+A = [2, 3, 1, 15, 2, 2, 5, 12, 1, 1, 4], k = 8
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+prawy & A[prawy] & suma & lewy & aktualna\_dlugosc & najdluzszy & start \\
+\hline
+0  & 2   & 2  & 0  & 1  & 1  & 0 \\
+1  & 3   & 5  & 0  & 2  & 2  & 0 \\
+2  & 1   & 6  & 0  & 3  & 3  & 0 \\
+3  & 15  & 0  & 4  & 0  & 3  & 0 \\
+4  & 2   & 2  & 4  & 1  & 3  & 0 \\
+5  & 2   & 4  & 4  & 2  & 3  & 0 \\
+6  & 5   & 7  & 5  & 2  & 3  & 0 \\
+7  & 12  & 0  & 8  & 0  & 3  & 0 \\
+8  & 1   & 1  & 8  & 1  & 3  & 0 \\
+9  & 1   & 2  & 8  & 2  & 3  & 0 \\
+10 & 4   & 6  & 8  & 3  & 3  & 0 \\
+\hline
+\end{tabular}
+\caption{Ołówkowe śledzenie algorytmu sliding window}
+\label{tab:window_olowkowe}
+\end{table}
+
+\subsection{Teoretyczne oszacowanie złożoności obliczeniowej}
+Każdy element jest dodawany do sumy dokładnie raz. Każdy element jest odejmowany od sumy dokładnie raz w momencie przesunięcia lewego końca okna. Zate łączna liczba operacji dodawania i odejmowania jest mniejsze bądź równe 2n. Nie ma zagnieżdżonych pętli, które w pełni przeglądają tablicę.
+
+{ \Large
+\begin{equation}
+    n + n = 2n
+\end{equation}
+}
+
+Zatem złożoność czasowa wynosi:
+
+\begin{equation}
+    O(n)
+\end{equation}
+
+\listoffigures
+\listoftables
+
+\end{document}

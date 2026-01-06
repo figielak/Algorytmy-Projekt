@@ -11,11 +11,12 @@ def znajdz_najdluzszy_podciag(A, k):
             suma -= A[lewy]
             lewy += 1
             
-        dlugosc = prawy - lewy + 1
-        if dlugosc > najdluzszy:
-            najdluzszy = dlugosc
+        aktualna_dlugosc = prawy - lewy + 1
+        if aktualna_dlugosc > najdluzszy:
+            najdluzszy = aktualna_dlugosc
             start = lewy 
             
     return A[start: start + najdluzszy]
 
 print(znajdz_najdluzszy_podciag([1, 130, 2, 5, 1, 1, 4, 4, 1, 3, 1, 1], 10))
+print(znajdz_najdluzszy_podciag([1, 130, 1, 9, 11, 6, 1, 1, 1, 3, 1, 1], 4))
