@@ -12,5 +12,6 @@
 .*.lb
 
 latex.out/
-
 todo.txt
+.vscode
+build
