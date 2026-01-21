@@ -7,6 +7,7 @@
 \usepackage{setspace}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage{amssymb}
 
 \usepackage[
     colorlinks=true,
@@ -34,6 +35,21 @@
     captionpos=b,
     morekeywords={input, output, DLA, DOPOKI, ORAZ, LUB, ZWROC, OD, DO, JEZELI, INACZEJ, PRZERWIJ},
     morecomment=[l]{//}
+}
+
+\lstset{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue!70!black}\bfseries,
+    stringstyle=\color{red!60!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    numbersep=8pt,
+    breaklines=true,
+    tabsize=2,
+    showstringspaces=false,
+    morekeywords={int, vector, for, if, else, return, cout, endl}
 }
 
 \begin{document}
@@ -222,6 +238,47 @@ Zatem złożoność czasowa w najgorszym przypadku wynosi:
     O(n^2)
 \end{equation}
 
+\subsection{Wykazanie poprawności algorytmu}
+\subsubsection{Poprawność częściowa (zastosowanie niezmiennika)} 
+Rozważanym problemem jest znalezienie najdłuższego podciągu tablicy $A$ o sumie elementów mniejszej niż $k$. \\
+
+Jako niezmiennik pętli zewnętrznej (po indeksie $i$) przyjmujemy stwierdzenie:
+\begin{quote}
+Po zakończeniu każdej iteracji zmienne \texttt{najdluzszy} i \texttt{start} przechowują długość oraz początek najdłuższego podciągu spośród wszystkich podciągów zaczynających się w indeksach $0..i$ o sumie mniejszej niż $k$.
+\end{quote}
+
+\begin{itemize}
+    \item Przed pierwszą iteracją: \texttt{najdluzszy = 0}, \texttt{start = 0} – niezmiennik prawdziwy.
+    \item Podczas iteracji: wewnętrzna pętla po $j$ sumuje elementy od $i$ do $j$ i aktualizuje zmienne tylko jeśli suma $< k$ oraz długość podciągu jest większa od \texttt{najdluzszy}.
+    \item Po zakończeniu pętli zewnętrznej: wszystkie możliwe podciągi zostały rozpatrzone, zatem niezmiennik wskazuje warunek końcowy algorytmu.
+\end{itemize}
+
+\subsubsection{Własność stopu (zastosowanie półniezmiennika)}
+Algorytm zawiera dwie pętle: zewnętrzną po $i$ i wewnętrzną po $j$.
+
+\paragraph{Pętla wewnętrzna}
+\[
+V_1(j) = n - j
+\]
+\begin{itemize}
+    \item $V_1(j) \in \mathbb{N}$
+    \item W każdej iteracji $j$ rośnie o $1$, więc $V_1(j)$ maleje
+    \item Dolna granica: $V_1(j) \ge 0$; dla $j = n$ pętla kończy działanie
+\end{itemize}
+
+\paragraph{Pętla zewnętrzna}
+\[
+V_2(i) = n - i
+\]
+\begin{itemize}
+    \item $V_2(i) \in \mathbb{N}$
+    \item W każdej iteracji $i$ rośnie o $1$, więc $V_2(i)$ maleje
+    \item Dolna granica: $V_2(i) \ge 0$; dla $i = n$ pętla kończy działanie
+\end{itemize}
+
+\subsubsection{Wniosek końcowy}
+Skoro algorytm spełnia poprawność częściową (niezmiennik) oraz posiada własność stopu (półniezmienniki dla obu pętli), algorytm jest poprawny całkowicie.
+
 \section{Rozwiązanie - próba druga (sliding window)}
 
 \subsection{Analiza problemu}
@@ -247,6 +304,8 @@ Skracanie podciągu realizujemy poprzez zwiększenie indeksu lewy i odjęcie od 
         \item[] Danymi wyjściowymi algorytmu jest podciąg tablicy A o maksymalnej długości, którego suma elementów jest mniejsza niż k.
     \end{itemize}
 \end{enumerate}
+
+\newpage
 
 \subsection{Schemat blokowy}
 \begin{figure}[h!]
@@ -324,6 +383,216 @@ Zatem złożoność czasowa wynosi:
 \begin{equation}
     O(n)
 \end{equation}
+
+\subsection{Wykazanie poprawności algorytmu}
+\subsubsection{Poprawność częściowa (zastosowanie niezmiennika)}
+Rozważanym problemem jest znalezienie najdłuższego podciągu tablicy $A$ o sumie elementów mniejszej niż $k$. \\
+
+Jako niezmiennik pętli po indeksie \texttt{prawy} przyjmujemy stwierdzenie:
+\begin{quote}
+Po zakończeniu każdej iteracji zmienne \texttt{najdluzszy}, \texttt{start} oraz \texttt{lewy} spełniają warunki: zmienna \texttt{najdluzszy} przechowuje długość najdłuższego podciągu spośród wszystkich podciągów kończących się na indeksach $0..\texttt{prawy}$ o sumie elementów $< k$, a \texttt{start} przechowuje początek tego podciągu. Zmienna \texttt{lewy} wskazuje aktualny początek rozważanego podciągu z sumą $< k$.
+\end{quote}
+
+\begin{itemize}
+    \item Przed pierwszą iteracją: \texttt{najdluzszy = 0}, \texttt{start = 0}, \texttt{lewy = 0} – niezmiennik prawdziwy.
+    \item Podczas iteracji: dodanie elementu $A[\texttt{prawy}]$ do zmiennej \texttt{suma} oraz przesuwanie wskaźnika \texttt{lewy} w pętli while zapewnia, że suma bieżącego podciągu jest $< k$. Następnie aktualizowane są zmienne \texttt{najdluzszy} i \texttt{start}, jeśli aktualna długość jest większa.
+    \item Po zakończeniu pętli: wszystkie podciągi zostały rozpatrzone zgodnie z warunkiem, zatem niezmiennik implikuje poprawny wynik algorytmu.
+\end{itemize}
+
+\subsubsection{Własność stopu (zastosowanie półniezmiennika)}
+Algorytm zawiera dwie pętle: główną po \texttt{prawy} i wewnętrzną po \texttt{lewy}.
+
+\paragraph{Pętla wewnętrzna}
+\[
+V_1(\texttt{lewy}) = \texttt{prawy} - \texttt{lewy} + 1
+\]
+\begin{itemize}
+    \item $V_1(\texttt{lewy}) \in \mathbb{N}$
+    \item W każdej iteracji \texttt{lewy} zwiększa się o $1$, więc $V_1(\texttt{lewy})$ maleje
+    \item Dolna granica: $V_1(\texttt{lewy}) \ge 0$; gdy warunek \texttt{suma >= k} nie jest spełniony lub \texttt{lewy > prawy}, pętla przestaje działać
+\end{itemize}
+
+\paragraph{Pętla zewnętrzna}
+\[
+V_2(\texttt{prawy}) = n - \texttt{prawy}, \quad n = |A|
+\]
+\begin{itemize}
+    \item $V_2(\texttt{prawy}) \in \mathbb{N}$
+    \item W każdej iteracji \texttt{prawy} rośnie o $1$, więc $V_2(\texttt{prawy})$ maleje
+    \item Dolna granica: $V_2(\texttt{prawy}) \ge 0$; dla \texttt{prawy = n} pętla kończy działanie
+\end{itemize}
+
+\subsubsection{Wniosek końcowy}
+Skoro algorytm spełnia poprawność częściową (niezmiennik pętli) oraz posiada własność stopu (półniezmienniki dla obu pętli), algorytm jest poprawny całkowicie.
+
+\section{Implementacja wymyślonych algortymów w wybranym środowisku i języku oraz
+eksperymentalne powtwierdzenie wydajności (złożoności obliczeniowej) algorytmów.}
+
+\subsection{Prosta implementacja}
+\begin{lstlisting}
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<vector<int>> brute_force(int A[], int k, int n) {
+    int najdluzszy = 0;
+    vector<int> starts;
+
+    for(int i = 0; i < n; i++){
+        int suma = 0;
+        for(int j = i; j < n; j++){
+            suma += A[j];
+
+            if(suma < k){
+              int aktualna_dlugosc = j - i + 1;
+
+              if(aktualna_dlugosc > najdluzszy){
+                najdluzszy = aktualna_dlugosc;
+                starts.clear();
+                starts.push_back(i);
+              }
+              else if(aktualna_dlugosc == najdluzszy){
+                starts.push_back(i);
+              }
+            }
+            else{
+                break;
+            }
+        }
+    }
+
+    vector<vector<int>> result;
+    for(int i = 0; i < starts.size(); i++){
+        result.push_back(vector<int>(A + starts[i], A + starts[i] + najdluzszy));
+    }
+
+    return result;
+}
+
+vector<vector<int>> sliding_window(int A[], int k, int n) {
+    int lewy = 0;
+    int najdluzszy = 0;
+    vector<int> starts;
+    int suma = 0;
+
+    for(int prawy = 0; prawy < n; prawy++){
+        suma += A[prawy];
+
+        while(suma >= k && lewy <= prawy){
+            suma -= A[lewy];
+            lewy++;
+        }
+
+        int aktualna_dlugosc = prawy - lewy + 1;
+        if(aktualna_dlugosc > najdluzszy){
+            najdluzszy = aktualna_dlugosc;
+            starts.clear();
+            starts.push_back(lewy);
+        }
+        else if(aktualna_dlugosc == najdluzszy){
+            starts.push_back(lewy);
+        }
+    }
+
+    vector<vector<int>> result;
+    for(int i = 0; i < starts.size(); i++){
+        result.push_back(vector<int>(A + starts[i], A + starts[i] + najdluzszy));
+    }
+
+    return result;
+}
+
+void wypisz_resultat(vector<vector<int>> result) {
+    for (int i = 0; i < result.size(); i++){
+        cout << "[";
+        for(int j = 0; j < result[i].size(); j++){
+            cout << result[i][j] << " ";
+        }
+        cout << "] ";
+    }
+    cout << endl;
+}
+
+int main() {
+    int A[] = {1, 130, 2, 5, 1, 1, 4, 4, 1, 3, 1, 1};
+    int n = sizeof(A) / sizeof(A[0]);
+    int k = 10;
+    
+    cout << "Brute force: ";
+    wypisz_resultat(brute_force(A, k, n));
+
+    cout << "Sliding window: ";
+    wypisz_resultat(sliding_window(A, k, n));
+
+    return 0;
+}
+
+\end{lstlisting}
+Brute force: [2 5 1 1 ] [4 1 3 1 ] [1 3 1 1 ] \\
+Sliding window: [2 5 1 1 ] [4 1 3 1 ] [1 3 1 1 ]
+
+\subsection{Testy ,,niewygodnych” zestawów danych}
+\begin{lstlisting}
+int main() {
+    int A1[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    int A2[] = {10, 20, 30, 40, 50, 60};
+    int A3[] = {7, -3, 6, -4, 9};
+    int A4[] = {1, 100, 2, 90, 3, 80, 4, 70};
+
+    int k1 = 4;
+    int k2 = 5;
+    int k3 = 10;
+    int k4 = 50;
+
+    int n1 = sizeof(A1) / sizeof(A1[0]);
+    int n2 = sizeof(A2) / sizeof(A2[0]);
+    int n3 = sizeof(A3) / sizeof(A3[0]);
+    int n4 = sizeof(A4) / sizeof(A4[0]);
+    
+    cout << "Brute force: " << endl;
+    cout << "Test 1: ";
+    wypisz_resultat(brute_force(A1, k1, n1));
+    cout << "Test 2: ";
+    wypisz_resultat(brute_force(A2, k2, n2));
+    cout << "Test 3: ";
+    wypisz_resultat(brute_force(A3, k3, n3));
+    cout << "Test 4: ";
+    wypisz_resultat(brute_force(A4, k4, n4));
+
+    cout << endl;
+
+    cout << "Sliding window: " << endl;
+    cout << "Test 1: ";
+    wypisz_resultat(sliding_window(A1, k1, n1));
+    cout << "Test 2: ";
+    wypisz_resultat(sliding_window(A2, k2, n2));
+    cout << "Test 3: ";
+    wypisz_resultat(sliding_window(A3, k3, n3));
+    cout << "Test 4: ";
+    wypisz_resultat(sliding_window(A4, k4, n4));
+
+    return 0;
+}
+\end{lstlisting}
+Brute force: \\
+Test 1: [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] \\
+Test 2: \\
+Test 3: [-3 6 -4 9 ] \\
+Test 4: [1 ] [2 ] [3 ] [4 ] \\
+
+Sliding window: \\
+Test 1: [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] [1 1 1 ] \\
+Test 2: [] [] [] [] [] [] \\
+Test 3: [-3 6 -4 9 ] \\
+Test 4: [1 ] [2 ] [3 ] [4 ] \\
+
+Gdy mamy dużą tablicę z małymi wartościami w porównaniu do k. Otrzymamy bardzo dużo podobnych tablic.
+
+\subsection{Testy wydajności algorytmów - eksperymentalne sprawdzenie złożoności czasowej}
+
+\subsection{Testy wydajności algorytmów - złożoności optymistyczne/pesymistyczne}
+
 
 \listoffigures
 \listoftables
