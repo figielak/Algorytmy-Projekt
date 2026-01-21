@@ -71,36 +71,54 @@ vector<vector<int>> sliding_window(int A[], int k, int n) {
     return result;
 }
 
+void wypisz_resultat(vector<vector<int>> result) {
+    for (int i = 0; i < result.size(); i++){
+        cout << "[";
+        for(int j = 0; j < result[i].size(); j++){
+            cout << result[i][j] << " ";
+        }
+        cout << "] ";
+    }
+    cout << endl;
+}
+
 int main() {
-    int A[] = {1, 130, 2, 5, 1, 1, 4, 4, 1, 3, 1, 1};
-    int n = sizeof(A) / sizeof(A[0]);
-    int k = 10;
+    int A1[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+    int A2[] = {10, 20, 30, 40, 50, 60};
+    int A3[] = {7, -3, 6, -4, 9};
+    int A4[] = {1, 100, 2, 90, 3, 80, 4, 70};
 
-    vector<vector<int>> result;
+    int k1 = 4;
+    int k2 = 5;
+    int k3 = 10;
+    int k4 = 50;
+
+    int n1 = sizeof(A1) / sizeof(A1[0]);
+    int n2 = sizeof(A2) / sizeof(A2[0]);
+    int n3 = sizeof(A3) / sizeof(A3[0]);
+    int n4 = sizeof(A4) / sizeof(A4[0]);
     
-    cout << "Brute force: ";
-    result = brute_force(A, k, n);
-    for (int i = 0; i < result.size(); i++){
-        cout << "[";
-        for(int j = 0; j < result[i].size(); j++){
-            cout << result[i][j] << " ";
-        }
-        cout << "] ";
-    }
+    cout << "Brute force: " << endl;
+    cout << "Test 1: ";
+    wypisz_resultat(brute_force(A1, k1, n1));
+    cout << "Test 2: ";
+    wypisz_resultat(brute_force(A2, k2, n2));
+    cout << "Test 3: ";
+    wypisz_resultat(brute_force(A3, k3, n3));
+    cout << "Test 4: ";
+    wypisz_resultat(brute_force(A4, k4, n4));
+
     cout << endl;
 
-    cout << "Sliding window: ";
-    result = sliding_window(A, k, n);
-    for (int i = 0; i < result.size(); i++){
-        cout << "[";
-        for(int j = 0; j < result[i].size(); j++){
-            cout << result[i][j] << " ";
-        }
-        cout << "] ";
-    }
-    cout << endl;
-
-
+    cout << "Sliding window: " << endl;
+    cout << "Test 1: ";
+    wypisz_resultat(sliding_window(A1, k1, n1));
+    cout << "Test 2: ";
+    wypisz_resultat(sliding_window(A2, k2, n2));
+    cout << "Test 3: ";
+    wypisz_resultat(sliding_window(A3, k3, n3));
+    cout << "Test 4: ";
+    wypisz_resultat(sliding_window(A4, k4, n4));
 
     return 0;
 }
