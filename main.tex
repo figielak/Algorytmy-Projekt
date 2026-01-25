@@ -590,6 +590,172 @@ Test 4: [1 ] [2 ] [3 ] [4 ] \\
 Gdy mamy dużą tablicę z małymi wartościami w porównaniu do k. Otrzymamy bardzo dużo podobnych tablic.
 
 \subsection{Testy wydajności algorytmów - eksperymentalne sprawdzenie złożoności czasowej}
+\begin{lstlisting}
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+vector<vector<int>> brute_force(int A[], int k, int n) {
+    int najdluzszy = 0;
+    vector<int> starts;
+
+    for(int i = 0; i < n; i++){
+        int suma = 0;
+        for(int j = i; j < n; j++){
+            suma += A[j];
+
+            if(suma < k){
+              int aktualna_dlugosc = j - i + 1;
+
+              if(aktualna_dlugosc > najdluzszy){
+                najdluzszy = aktualna_dlugosc;
+                starts.clear();
+                starts.push_back(i);
+              }
+              else if(aktualna_dlugosc == najdluzszy){
+                starts.push_back(i);
+              }
+            }
+            else{
+                break;
+            }
+        }
+    }
+
+    vector<vector<int>> result;
+    for(int i = 0; i < starts.size(); i++){
+        result.push_back(vector<int>(A + starts[i], A + starts[i] + najdluzszy));
+    }
+
+    return result;
+}
+
+vector<vector<int>> sliding_window(int A[], int k, int n) {
+    int lewy = 0;
+    int najdluzszy = 0;
+    vector<int> starts;
+    int suma = 0;
+
+    for(int prawy = 0; prawy < n; prawy++){
+        suma += A[prawy];
+
+        while(suma >= k && lewy <= prawy){
+            suma -= A[lewy];
+            lewy++;
+        }
+
+        int aktualna_dlugosc = prawy - lewy + 1;
+        if(aktualna_dlugosc > najdluzszy){
+            najdluzszy = aktualna_dlugosc;
+            starts.clear();
+            starts.push_back(lewy);
+        }
+        else if(aktualna_dlugosc == najdluzszy){
+            starts.push_back(lewy);
+        }
+    }
+
+    vector<vector<int>> result;
+    for(int i = 0; i < starts.size(); i++){
+        result.push_back(vector<int>(A + starts[i], A + starts[i] + najdluzszy));
+    }
+
+    return result;
+}
+
+void generuj(int *tab, int n, int nmax) {
+    for(int i = 0; i < n; i++){
+        tab[i] = rand() % nmax;
+    }
+}
+
+void wypisz_resultat(vector<vector<int>> result) {
+    for (int i = 0; i < result.size(); i++){
+        cout << "[";
+        for(int j = 0; j < result[i].size(); j++){
+            cout << result[i][j] << " ";
+        }
+        cout << "] ";
+    }
+    cout << endl;
+}
+
+int *tab;
+float *czas1;
+float *czas2;
+
+clock_t start, finish;
+
+int main() {
+    int N[] = {250000, 500000, 1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000};
+    int liczba_testow = sizeof(N) / sizeof(N[0]);
+    czas1 = (float *) malloc(liczba_testow * sizeof (float) );
+    czas2 = (float *) malloc(liczba_testow * sizeof (float) );
+
+    for(int i = 0; i < liczba_testow; i++){
+        tab = (int *) malloc(N[i] * sizeof (int) );
+        generuj(tab, N[i], 10000);
+
+        start = clock();
+        brute_force(tab, N[i]/2, N[i]);
+        finish = clock();
+        czas1[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+
+        start = clock();
+        sliding_window(tab, N[i]/2, N[i]);
+        finish = clock();
+        czas2[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+        free(tab);
+    }
+    cout << endl << endl;
+    printf(" L.p.      n     t1 [s]    t2 [s] \n ");
+    for(int i = 0; i < liczba_testow; i++){
+        printf("%2d %10d %6.6f %6.6f\n ", i+1, N[i], czas1[i], czas2[i]) ;
+    }
+
+    return 0;
+}
+
+\end{lstlisting}
+
+\begin{table}[h!]
+\centering
+\label{tab:czasy}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{L.p.} & \textbf{n} & \textbf{$t_1$ [s]} & \textbf{$t_2$ [s]} \\
+\hline
+1  & 200000  & 0.031003  & 0.003935 \\
+2  & 500000  & 0.104805  & 0.007289 \\
+3  & 1000000 & 0.353430  & 0.007711 \\
+4  & 2000000 & 0.739041  & 0.014497 \\
+5  & 3000000 & 1.663470  & 0.021500 \\
+6  & 4000000 & 2.957843  & 0.028472 \\
+7  & 5000000 & 4.590719  & 0.035083 \\
+8  & 6000000 & 6.581690  & 0.042666 \\
+9  & 7000000 & 8.967931  & 0.049816 \\
+10 & 8000000 & 11.732619 & 0.057095 \\
+\hline
+\end{tabular}
+\caption{Czasy wykonania algorytmów}
+\end{table}
+
+\newpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{zlozonosc_brute_force.png}
+\caption{Wykres złożoności brute force}
+\label{fig:wykres1}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.7\textwidth]{zlozonosc_sliding_window.png}
+\caption{Wykres złożoności sliding window}
+\label{fig:wykres1}
+\end{figure}
 
 \subsection{Testy wydajności algorytmów - złożoności optymistyczne/pesymistyczne}
 

@@ -71,6 +71,12 @@ vector<vector<int>> sliding_window(int A[], int k, int n) {
     return result;
 }
 
+void generuj(int *tab, int n, int nmax) {
+    for(int i = 0; i < n; i++){
+        tab[i] = rand() % nmax;
+    }
+}
+
 void wypisz_resultat(vector<vector<int>> result) {
     for (int i = 0; i < result.size(); i++){
         cout << "[";
@@ -82,7 +88,14 @@ void wypisz_resultat(vector<vector<int>> result) {
     cout << endl;
 }
 
+int *tab;
+float *czas1;
+float *czas2;
+
+clock_t start, finish;
+
 int main() {
+    // Niewygodne zestawy danych
     int A1[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
     int A2[] = {10, 20, 30, 40, 50, 60};
     int A3[] = {7, -3, 6, -4, 9};
@@ -97,7 +110,7 @@ int main() {
     int n2 = sizeof(A2) / sizeof(A2[0]);
     int n3 = sizeof(A3) / sizeof(A3[0]);
     int n4 = sizeof(A4) / sizeof(A4[0]);
-    
+
     cout << "Brute force: " << endl;
     cout << "Test 1: ";
     wypisz_resultat(brute_force(A1, k1, n1));
@@ -119,6 +132,33 @@ int main() {
     wypisz_resultat(sliding_window(A3, k3, n3));
     cout << "Test 4: ";
     wypisz_resultat(sliding_window(A4, k4, n4));
+
+    // Testowanie złożoności
+    int N[] = {250000, 500000, 1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000};
+    int liczba_testow = sizeof(N) / sizeof(N[0]);
+    czas1 = (float *) malloc(liczba_testow * sizeof (float) );
+    czas2 = (float *) malloc(liczba_testow * sizeof (float) );
+
+    for(int i = 0; i < liczba_testow; i++){
+        tab = (int *) malloc(N[i] * sizeof (int) );
+        generuj(tab, N[i], 10000);
+
+        start = clock();
+        brute_force(tab, N[i]/2, N[i]);
+        finish = clock();
+        czas1[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+
+        start = clock();
+        sliding_window(tab, N[i]/2, N[i]);
+        finish = clock();
+        czas2[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+        free(tab);
+    }
+    cout << endl << endl;
+    printf(" L.p.      n     t1 [s]    t2 [s] \n ");
+    for(int i = 0; i < liczba_testow; i++){
+        printf("%2d %10d %6.6f %6.6f\n ", i+1, N[i], czas1[i], czas2[i]) ;
+    }
 
     return 0;
 }
