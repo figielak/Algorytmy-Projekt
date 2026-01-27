@@ -758,8 +758,65 @@ int main() {
 \end{figure}
 
 \subsection{Testy wydajności algorytmów - złożoności optymistyczne/pesymistyczne}
+W przypadku tego problemu im mniejsze k tym szybciej algorytm będzie się wykonywał i tym mniejsza różnica w wydajności będzie między tymi dwoma algorytmami.
+
+\begin{lstlisting}
+int main() {
+    // Testowanie złożoności
+    int N[] = {250000, 500000, 1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000};
+    int liczba_testow = sizeof(N) / sizeof(N[0]);
+    czas1 = (float *) malloc(liczba_testow * sizeof (float) );
+    czas2 = (float *) malloc(liczba_testow * sizeof (float) );
+
+    for(int i = 0; i < liczba_testow; i++){
+        tab = (int *) malloc(N[i] * sizeof (int) );
+        generuj(tab, N[i], 10000);
+
+        start = clock();
+        brute_force(tab, N[i]/20, N[i]);
+        finish = clock();
+        czas1[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+
+        start = clock();
+        sliding_window(tab, N[i]/20, N[i]);
+        finish = clock();
+        czas2[i] = ((float)(finish - start)) / CLOCKS_PER_SEC;
+        free(tab);
+    }
+    cout << endl << endl;
+    printf(" L.p.      n     t1 [s]    t2 [s] \n ");
+    for(int i = 0; i < liczba_testow; i++){
+        printf("%2d %10d %6.6f %6.6f\n ", i+1, N[i], czas1[i], czas2[i]) ;
+    }
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|r|c|c|}
+\hline
+Lp. & $n$ & $t_1$ [s] & $t_2$ [s] \\
+\hline
+1  & 250000 & 0.004795 & 0.004189 \\
+2  & 50000  & 0.017081 & 0.007819 \\
+3  & 100000 & 0.054856 & 0.015911 \\
+4  & 200000 & 0.182500 & 0.028738 \\
+5  & 300000 & 0.226510 & 0.020939 \\
+6  & 400000 & 0.314604 & 0.028059 \\
+7  & 500000 & 0.485833 & 0.035116 \\
+8  & 600000 & 0.690309 & 0.042426 \\
+9  & 700000 & 0.947294 & 0.049680 \\
+10 & 800000 & 1.217408 & 0.057858 \\
+\hline
+\end{tabular}
+\caption{Czasy wykonania algorytmów}
+\label{tab:czasy}
+\end{table}
 
 
+ 
 \listoffigures
 \listoftables
 
